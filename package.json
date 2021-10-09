@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "json:server": "json-server --watch db.json"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,8 @@
     "express": "^4.17.1",
     "express-graphql": "^0.12.0",
     "graphql": "^15.6.1",
-    "lodash": "^4.17.21"
+    "json": "^11.0.0",
+    "lodash": "^4.17.21",
+    "server": "^1.0.36"
   }
 }
