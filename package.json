@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "json:server": "json-server --watch db.json"
+    "json:server": "json-server --watch db.json",
+    "dev": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,7 @@
   },
   "homepage": "https://github.com/answebdev/graphql-practice#readme",
   "dependencies": {
+    "axios": "^0.22.0",
     "express": "^4.17.1",
     "express-graphql": "^0.12.0",
     "graphql": "^15.6.1",

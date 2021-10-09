@@ -1,5 +1,7 @@
 const graphql = require('graphql');
-const _ = require('lodash');
+const axios = require('axios');
+// Lodash used only to get our hard coded data, which we only did in the beginning:
+// const _ = require('lodash');
 const {
     GraphQLObjectType,
     GraphQLString,
@@ -8,10 +10,10 @@ const {
 } = graphql;
 
 // Users (Hard Coded)
-const users = [
-    { id: '23', firstName: 'Bill', age: 20 },
-    { id: '47', firstName: 'Samantha', age: 21 }
-];
+// const users = [
+//     { id: '23', firstName: 'Bill', age: 20 },
+//     { id: '47', firstName: 'Samantha', age: 21 }
+// ];
 
 const UserType = new GraphQLObjectType({
     name: 'User',
@@ -34,7 +36,11 @@ const RootQuery = new GraphQLObjectType({
             resolve(parentValue, args) {
                 // Return a user with a given ID
                 // From hard coded data (see above):
-                return _.find(users, { id: args.id });
+                //return _.find(users, { id: args.id });
+
+                // Make HTTP request to find data from our separate JSON Server server:
+                return axios.get(`http://localhost:3000/users/${args.id}`)
+                .then(res => res.data);
             }
         }
     }
