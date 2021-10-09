@@ -1,17 +1,15 @@
 const express = require('express');
-// const expressGraphQL = require('express-graphql');
 const { graphqlHTTP } = require('express-graphql')
 const app = express();
+const schema = require('./schema/schema');
 
 // Tell the Express app that if any request comes into our app looking for '/graphql',
 // then we want the GraphQL library to handle it.
-// app.use('/graphql', expressGraphQL ({
-//     graphiql: true
-// }));
 app.use('/graphql', graphqlHTTP({
-    graphiql: true
-}))
+    schema: schema,
+    graphiql: true,
+}));
 
 app.listen(4000, () => {
-    console.log('Listening...');
+    console.log('Now listening for requests on Port 4000...');
 });
