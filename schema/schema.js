@@ -15,12 +15,33 @@ const {
 //     { id: '47', firstName: 'Samantha', age: 21 }
 // ];
 
+// Note that this 'CompanyType' is going to be used below as a 'UserType' field,
+// since a user can be associated with a company.
+const CompanyType = new GraphQLObjectType({
+    name:'Company',
+    fields: {
+        id: { type: GraphQLString },
+        name: { type: GraphQLString },
+        description: { type: GraphQLString }
+    }
+});
+
 const UserType = new GraphQLObjectType({
     name: 'User',
     fields: {
         id: { type: GraphQLString },
         firstName: { type: GraphQLString },
-        age: { type: GraphQLInt }
+        age: { type: GraphQLInt },
+        company: {
+            type: CompanyType,
+            // Use 'resolve' to find the company that is associated with a given user.
+            // To see how to get the following lines, see video at 2:50 + mark: https://www.udemy.com/course/graphql-with-react-course/learn/lecture/6523070#overview
+            resolve(parentValue, args) {
+            // console.log(parentValue, args);
+            return axios.get(`http://localhost:3000/companies/${parentValue.companyId}`)
+                .then(res => res.data);
+            }
+        }
     }
 });
 
