@@ -2,7 +2,13 @@ const graphql = require('graphql');
 const axios = require('axios');
 // Lodash used only to get our hard coded data, which we only did in the beginning:
 // const _ = require('lodash');
-const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema } = graphql;
+const {
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLSchema,
+  GraphQLList,
+} = graphql;
 
 // Users (Hard Coded)
 // const users = [
@@ -14,16 +20,30 @@ const { GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLSchema } = graphql;
 // since a user can be associated with a company.
 const CompanyType = new GraphQLObjectType({
   name: 'Company',
-  fields: {
+  fields: () => ({
     id: { type: GraphQLString },
     name: { type: GraphQLString },
     description: { type: GraphQLString },
-  },
+    users: {
+      // There are many users associated with a company (not just 1 like how each user is asoociated with only 1 company,
+      // as in 'UserType' below).
+      // We need to tell GraphQL to expect to get a LIST/COLLECTION of users (not just 1) who are going to be associated with a single company.
+      // To do this, we need to wrap 'UserType' in 'GraphQLList' - this tells GraphQL that when we go from a company over to a user,
+      // we're going to have multiple users associated with that one company:
+      type: new GraphQLList(UserType),
+      resolve(parentValue, args) {
+        // The 'id' is the id of the company we are currently considering:
+        return axios
+          .get(`http://localhost:3000/companies/${parentValue.id}/users`)
+          .then((res) => res.data);
+      },
+    },
+  }),
 });
 
 const UserType = new GraphQLObjectType({
   name: 'User',
-  fields: {
+  fields: () => ({
     id: { type: GraphQLString },
     firstName: { type: GraphQLString },
     age: { type: GraphQLInt },
@@ -38,7 +58,7 @@ const UserType = new GraphQLObjectType({
           .then((res) => res.data);
       },
     },
-  },
+  }),
 });
 
 // Root Query - the entry point into our data.
