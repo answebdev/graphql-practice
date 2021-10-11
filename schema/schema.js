@@ -1,5 +1,6 @@
 const graphql = require('graphql');
 const axios = require('axios');
+const { post } = require('server/router');
 // Lodash used only to get our hard coded data, which we only did in the beginning:
 // const _ = require('lodash');
 const {
@@ -8,6 +9,7 @@ const {
   GraphQLInt,
   GraphQLSchema,
   GraphQLList,
+  GraphQLNonNull,
 } = graphql;
 
 // Users (Hard Coded)
@@ -93,6 +95,33 @@ const RootQuery = new GraphQLObjectType({
   },
 });
 
+// Mutations
+const mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    addUser: {
+      type: UserType,
+      args: {
+        // An ID is not really necessary when adding a new user - we don't really need it (maybe a new user does not belong to a company, and so, has no ID),
+        // so we don't really need 'companyId' here as an 'arg'.
+        // So to add some level of validation for ou mutation, we wrap the 'type' for our 'firstName' and our 'age' with the 'GraphQLNonNull' wrapper.
+        // This tells our schema that whenever someone calls this mutation, they MUST provide a first name and an age, otherwise, an error will be thrown (this is the validation).
+        // 'NonNull' means you have to provide a value - it cannot be null.
+        firstName: { type: new GraphQLNonNull(GraphQLString) },
+        age: { type: new GraphQLNonNull(GraphQLInt) },
+        companyId: { type: GraphQLString },
+      },
+      // In a mutation, the 'resolve' function is where we actually undergo the operation to create this new record inside (this new piece of data) of our database (in this case, adding a new user).
+      resolve(parentValue, { firstName, age }) {
+        return axios
+          .post('http://localhost:3000/users', { firstName, age })
+          .then((res) => res.data);
+      },
+    },
+  },
+});
+
 module.exports = new GraphQLSchema({
   query: RootQuery,
+  mutation: mutation,
 });
