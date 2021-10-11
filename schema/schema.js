@@ -118,6 +118,20 @@ const mutation = new GraphQLObjectType({
           .then((res) => res.data);
       },
     },
+    deleteUser: {
+      type: UserType,
+      // For args, we don't need to know the name or age in order to delete the user,
+      // we just need to ID of the particular user to be able to delete the user
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLString) },
+      },
+      // Use destructuring to pull the 'id' from 'args':
+      resolve(parentValue, { id }) {
+        return axios
+          .delete(`http://localhost:3000/users/${id}`)
+          .then((res) => res.data);
+      },
+    },
   },
 });
 
