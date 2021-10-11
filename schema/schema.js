@@ -132,6 +132,27 @@ const mutation = new GraphQLObjectType({
           .then((res) => res.data);
       },
     },
+    editUser: {
+      type: UserType,
+      args: {
+        // We might not be updating/editing every single property on our user (e.g., we might only want to update the first name).
+        // However, there is one property that will always be provided: the 'id' property.
+        // So if you want to update a user, we have to say which user we want to update (by using the user 'id').
+        // And because we need to say which user we need to update, we need to have require that we need the 'id',
+        // and so we use 'GraphQLNonNull' for validation to require the 'id'.
+        // But since first name, age, and companyId are optional, we don't need to use 'GraphQLNonNull' because they are optional and not required.
+        id: { type: new GraphQLNonNull(GraphQLString) },
+        firstName: { type: GraphQLString },
+        age: { type: GraphQLInt },
+        companyId: { type: GraphQLString },
+      },
+      // See Trello notes for difference between PUT and PATCH requests.
+      resolve(parentValue, args) {
+        return axios
+          .patch(`http://localhost:3000/users/${args.id}`, args)
+          .then((res) => res.data);
+      },
+    },
   },
 });
 
